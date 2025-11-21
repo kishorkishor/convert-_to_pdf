@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +17,7 @@ export async function POST(request: NextRequest) {
     // 1. Use an external API service (CloudConvert, etc.)
     // 2. Use a Docker container with LibreOffice
     // 3. Use a separate service/worker for heavy processing
-    
+
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
 

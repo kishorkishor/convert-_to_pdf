@@ -5,12 +5,7 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-    responseLimit: false,
-  },
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Ignore canvas module in client-side builds

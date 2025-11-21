@@ -21,7 +21,7 @@ export const conversionOptions: ConversionOption[] = [
   {
     id: 'image-to-pdf',
     label: 'Image to PDF',
-    from: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'],
+    from: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'],
     to: 'pdf',
     description: 'Convert images to PDF format',
   },

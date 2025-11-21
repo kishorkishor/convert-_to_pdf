@@ -1,54 +1,108 @@
-import jsPDF from 'jspdf';
+import jsPDF, { jsPDFOptions } from 'jspdf';
+import { ImagePreviewItem } from '@/lib/types/conversion';
 
-export async function convertImageToPdf(files: File[]): Promise<Blob> {
-  const pdf = new jsPDF();
-  const maxWidth = 190; // A4 width in mm
-  const maxHeight = 277; // A4 height in mm
-  const margin = 10;
+interface ImageInfo {
+  dataUrl: string;
+  width: number;
+  height: number;
+  format: ImagePreviewItem['format'];
+  orientation: 'portrait' | 'landscape';
+}
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    if (i > 0) {
-      pdf.addPage();
-    }
+export interface ImageToPdfResult {
+  blob: Blob;
+  images: ImagePreviewItem[];
+}
 
-    try {
-      const imageData = await fileToBase64(file);
-      const img = new Image();
-      
-      await new Promise<void>((resolve, reject) => {
-        img.onload = () => {
-          let imgWidth = img.width;
-          let imgHeight = img.height;
-          const ratio = Math.min(
-            (maxWidth - margin * 2) / imgWidth,
-            (maxHeight - margin * 2) / imgHeight
-          );
-
-          imgWidth = imgWidth * ratio;
-          imgHeight = imgHeight * ratio;
-
-          const x = (maxWidth - imgWidth) / 2;
-          const y = (maxHeight - imgHeight) / 2;
-
-          // Determine image format from file type or data URL
-          const format = file.type.includes('png') ? 'PNG' : 
-                        file.type.includes('gif') ? 'GIF' : 
-                        file.type.includes('webp') ? 'WEBP' : 'JPEG';
-          
-          pdf.addImage(imageData, format, x, y, imgWidth, imgHeight);
-          resolve();
-        };
-        img.onerror = reject;
-        img.src = imageData;
-      });
-    } catch (error) {
-      console.error(`Error processing image ${file.name}:`, error);
-      throw new Error(`Failed to process image: ${file.name}`);
-    }
+export async function convertImageToPdf(files: File[]): Promise<ImageToPdfResult> {
+  if (!files.length) {
+    throw new Error('No images provided');
   }
 
-  return new Blob([pdf.output('blob')], { type: 'application/pdf' });
+  const imageInfos: ImageInfo[] = [];
+  const firstImage = await loadImage(files[0]);
+  imageInfos.push(firstImage);
+  const pdf = createPdfDocument(firstImage.orientation);
+  addImageToPage(pdf, firstImage);
+
+  for (let i = 1; i < files.length; i++) {
+    const imageInfo = await loadImage(files[i]);
+    imageInfos.push(imageInfo);
+    pdf.addPage('a4', imageInfo.orientation === 'landscape' ? 'l' : 'p');
+    addImageToPage(pdf, imageInfo);
+  }
+
+  const blob = new Blob([pdf.output('blob')], { type: 'application/pdf' });
+  const images: ImagePreviewItem[] = imageInfos.map((info, index) => ({
+    id: `${Date.now()}-${index}`,
+    src: info.dataUrl,
+    name: `Page ${index + 1}`,
+    format: info.format,
+    width: info.width,
+    height: info.height,
+  }));
+
+  return { blob, images };
+}
+
+function createPdfDocument(orientation: 'portrait' | 'landscape') {
+  const options: jsPDFOptions = {
+    orientation: orientation === 'landscape' ? 'l' : 'p',
+    unit: 'mm',
+    format: 'a4',
+    compress: true,
+  };
+  return new jsPDF(options);
+}
+
+function addImageToPage(pdf: jsPDF, imageInfo: ImageInfo) {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 5;
+
+  const availableWidth = pageWidth - margin * 2;
+  const availableHeight = pageHeight - margin * 2;
+
+  const ratio = Math.min(
+    availableWidth / imageInfo.width,
+    availableHeight / imageInfo.height
+  );
+
+  const renderWidth = imageInfo.width * ratio;
+  const renderHeight = imageInfo.height * ratio;
+
+  const x = (pageWidth - renderWidth) / 2;
+  const y = (pageHeight - renderHeight) / 2;
+
+  pdf.addImage(imageInfo.dataUrl, imageInfo.format, x, y, renderWidth, renderHeight, undefined, 'FAST');
+}
+
+async function loadImage(file: File): Promise<ImageInfo> {
+  const dataUrl = await fileToBase64(file);
+  const img = new Image();
+
+  return new Promise((resolve, reject) => {
+    img.onload = () => {
+      const format = getImageFormat(file);
+      const orientation = img.width >= img.height ? 'landscape' : 'portrait';
+      resolve({
+        dataUrl,
+        width: img.width,
+        height: img.height,
+        format,
+        orientation,
+      });
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+function getImageFormat(file: File): ImagePreviewItem['format'] {
+  if (file.type.includes('png')) return 'PNG';
+  if (file.type.includes('webp')) return 'WEBP';
+  if (file.type.includes('gif')) return 'GIF';
+  return 'JPEG';
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -58,5 +112,33 @@ function fileToBase64(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+function previewItemToInfo(item: ImagePreviewItem): ImageInfo {
+  return {
+    dataUrl: item.src,
+    width: item.width,
+    height: item.height,
+    format: item.format,
+    orientation: item.width >= item.height ? 'landscape' : 'portrait',
+  };
+}
+
+export async function buildPdfFromPreviewItems(items: ImagePreviewItem[]): Promise<Blob> {
+  if (!items.length) {
+    throw new Error('No images to build PDF');
+  }
+
+  const first = previewItemToInfo(items[0]);
+  const pdf = createPdfDocument(first.orientation);
+  addImageToPage(pdf, first);
+
+  for (let i = 1; i < items.length; i++) {
+    const info = previewItemToInfo(items[i]);
+    pdf.addPage('a4', info.orientation === 'landscape' ? 'l' : 'p');
+    addImageToPage(pdf, info);
+  }
+
+  return new Blob([pdf.output('blob')], { type: 'application/pdf' });
 }
 

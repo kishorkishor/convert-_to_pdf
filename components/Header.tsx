@@ -13,7 +13,7 @@ export function Header() {
     <header className="w-full py-4 px-6">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--text-color)' }}>
-          File Converter
+          K
         </h1>
         <button
           onClick={toggleTheme}

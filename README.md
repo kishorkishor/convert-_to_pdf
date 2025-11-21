@@ -1,136 +1,45 @@
-# File Converter Website
+# KKT File Converter 📄✨
 
-A fast and reliable file converter that supports converting PPT, images, documents, and more to PDF format (and vice versa). Built with Next.js 14, TypeScript, and featuring a beautiful Neumorphic UI design.
+Hey there! 👋
 
-## Features
+Welcome to the **KKT File Converter**. I built this little tool because I was tired of uploading my private documents to random websites just to convert them to PDF. I wanted something fast, secure, and that runs right in the browser.
 
-- 🖼️ **Image to PDF** - Convert JPG, PNG, GIF, WEBP, and more to PDF
-- 📄 **PDF to Image** - Extract PDF pages as images
-- 📝 **DOCX to PDF** - Convert Word documents to PDF
-- 🌐 **HTML to PDF** - Convert HTML files to PDF
-- 📊 **PPT to PDF** - Convert PowerPoint presentations (server-side)
-- ⚡ **Fast Processing** - Client-side processing for most conversions
-- 🔒 **Privacy First** - Files processed in your browser when possible
-- 🎨 **Beautiful UI** - Neumorphic design with dark/light theme support
-- 📱 **Responsive** - Works on all devices
+So, here it is! It handles things like PowerPoint presentations, images, and documents, turning them into clean PDFs without your data ever leaving your computer.
 
-## Tech Stack
+## See it in action 👀
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS + Custom Neumorphic CSS
-- **Client-side Libraries**:
-  - `pdf-lib` - PDF manipulation
-  - `jspdf` - PDF generation
-  - `html2pdf.js` - HTML to PDF
-  - `mammoth` - DOCX to HTML
-- **Server-side Libraries**:
-  - `sharp` - Image processing
-  - `pdf2pic` - PDF to images
-  - `pdf-poppler` - PDF processing
+I'm a big fan of dark mode (who isn't?), but I made sure to include a light mode too for those bright sunny days. Check out the toggle in action:
 
-## Getting Started
+![App Demo](./demo.webp)
 
-### Prerequisites
+## Why use this?
 
-- Node.js 18+ installed
-- npm or yarn package manager
+*   **Privacy First**: Everything happens locally on your machine. No servers peeking at your files. 🔒
+*   **Versatile**: Converts PPTs, Images, and more.
+*   **Easy on the Eyes**: Comes with a built-in Dark/Light mode toggle. 🌙/☀️
+*   **Fast**: Built with Next.js, so it's snappy.
 
-### Installation
+## How to run it 🚀
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd to-pdf
-```
+If you want to run this locally on your machine, it's super simple.
 
-2. Install dependencies:
-```bash
-npm install
-```
+1.  **Clone the repo** (or just download the files).
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Fire it up**:
+    ```bash
+    npm run dev
+    ```
+4.  Open `http://localhost:3000` (or `3001` if 3000 is busy) in your browser.
 
-3. Run the development server:
-```bash
-npm run dev
-```
+## Tech Stack 🛠️
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Just some cool tech I used to put this together:
+*   [Next.js](https://nextjs.org/) - The framework.
+*   [Tailwind CSS](https://tailwindcss.com/) - For the styling (and the dark mode magic).
+*   Various PDF libraries (`html2pdf.js`, `jspdf`, etc.) to handle the heavy lifting.
 
-### Build for Production
-
-```bash
-npm run build
-npm start
-```
-
-## Project Structure
-
-```
-to-pdf/
-├── app/
-│   ├── api/              # API routes for server-side conversions
-│   ├── layout.tsx        # Root layout with theme provider
-│   ├── page.tsx          # Home page
-│   └── globals.css       # Global styles with Neumorphic theme
-├── components/           # React components
-│   ├── Converter.tsx
-│   ├── ConversionCard.tsx
-│   ├── FileUploader.tsx
-│   ├── Header.tsx
-│   └── ThemeProvider.tsx
-├── hooks/               # Custom React hooks
-│   └── useTheme.ts
-├── lib/
-│   ├── converters/      # Conversion logic
-│   │   └── client/      # Client-side converters
-│   └── utils/           # Utility functions
-└── public/              # Static assets
-```
-
-## Supported Conversions
-
-### Client-Side (Browser)
-- Image → PDF
-- PDF → Image
-- HTML → PDF
-- DOCX → PDF
-
-### Server-Side (API Routes)
-- Image → PDF (with Sharp)
-- PDF → Images (requires additional setup)
-- Office Docs → PDF (requires LibreOffice or external service)
-
-## Deployment
-
-### Netlify
-
-1. Connect your repository to Netlify
-2. Build command: `npm run build`
-3. Publish directory: `.next`
-4. Add environment variables if needed
-
-Note: Some server-side conversions (like PPT to PDF) may require additional setup or external services when deploying to Netlify due to system dependencies.
-
-## Limitations
-
-- **File Size**: Maximum 50MB per file (configurable)
-- **PPT Conversion**: Requires server-side processing with LibreOffice or external API
-- **PDF to Images**: Requires system dependencies (pdf2pic/pdf-poppler) or external service
-
-## Future Enhancements
-
-- [ ] Batch file conversion
-- [ ] More file format support
-- [ ] Cloud storage integration
-- [ ] API access for developers
-- [ ] Premium features with ads
-
-## License
-
-MIT License - feel free to use this project for your own purposes.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-
+---
+*Enjoy converting! If you find a bug, let me know!* 🐛

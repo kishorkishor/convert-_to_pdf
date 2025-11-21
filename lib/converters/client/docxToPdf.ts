@@ -1,7 +1,12 @@
 import mammoth from 'mammoth';
 import { convertHtmlToPdf } from './htmlToPdf';
 
-export async function convertDocxToPdf(file: File): Promise<Blob> {
+export interface DocxToPdfResult {
+  blob: Blob;
+  html: string;
+}
+
+export async function convertDocxToPdf(file: File): Promise<DocxToPdfResult> {
   const arrayBuffer = await file.arrayBuffer();
   
   // Convert DOCX to HTML using mammoth
@@ -10,7 +15,8 @@ export async function convertDocxToPdf(file: File): Promise<Blob> {
   
   // Convert HTML to PDF
   const filename = file.name.replace(/\.[^/.]+$/, '');
-  return convertHtmlToPdf(html, filename);
+  const blob = await convertHtmlToPdf(html, filename);
+  return { blob, html };
 }
 
 

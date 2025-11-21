@@ -7,7 +7,7 @@ import { Header } from '@/components/Header'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'File Converter - Convert PPT, Images, and More to PDF',
+  title: 'KKT FILE CONVERTER - Convert PPT, Images, and More to PDF',
   description: 'Fast and reliable file converter. Convert PPT, images, documents to PDF and vice versa.',
 }
 

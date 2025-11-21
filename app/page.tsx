@@ -17,8 +17,11 @@ export default function Home() {
     setSelectedFile(file);
     const options = getConversionOptionsForFile(file);
     setAvailableConversions(options);
-    if (options.length > 0 && !selectedConversion) {
+    // Always auto-select the first available conversion for the new file type
+    if (options.length > 0) {
       setSelectedConversion(options[0].id);
+    } else {
+      setSelectedConversion(null);
     }
   };
 
@@ -38,11 +41,8 @@ export default function Home() {
         {/* Hero Section - Smaller */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2" style={{ color: 'var(--text-color)' }}>
-            File Converter
+            KKT FILE CONVERTER
           </h1>
-          <p className="text-base md:text-lg" style={{ color: 'var(--text-secondary)' }}>
-            Fast, reliable file conversion with Neumorphic design
-          </p>
         </div>
 
         {/* File Upload Section - THE MAIN GREETING */}

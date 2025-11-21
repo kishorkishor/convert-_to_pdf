@@ -1,3 +1,5 @@
+import { ImagePreviewItem } from '@/lib/types/conversion';
+
 // Load PDF.js from CDN to avoid Node.js dependencies
 async function loadPdfJs() {
   if (typeof window === 'undefined') {
@@ -23,29 +25,46 @@ async function loadPdfJs() {
   });
 }
 
-export async function convertPdfToImage(file: File, format: 'jpg' | 'png' = 'jpg'): Promise<Blob[]> {
+export interface PdfToImageResult {
+  blobs: Blob[];
+  images: ImagePreviewItem[];
+}
+
+export async function convertPdfToImage(file: File, format: 'jpg' | 'png' = 'jpg'): Promise<PdfToImageResult> {
   const arrayBuffer = await file.arrayBuffer();
+  // Convert to Uint8Array to avoid detachment issues
+  const data = new Uint8Array(arrayBuffer);
   const pdfjsLib: any = await loadPdfJs();
 
-  const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+  const loadingTask = pdfjsLib.getDocument({ data });
   const pdf = await loadingTask.promise;
   const numPages = pdf.numPages;
-  const images: Blob[] = [];
+  const blobs: Blob[] = [];
+  const images: ImagePreviewItem[] = [];
 
   for (let i = 1; i <= numPages; i++) {
-    const imageBlob = await renderPdfPageToImage(arrayBuffer, i - 1, format, pdfjsLib);
-    images.push(imageBlob);
+    const { blob, width, height } = await renderPdfPageToImage(data, i - 1, format, pdfjsLib);
+    blobs.push(blob);
+    const dataUrl = await blobToDataUrl(blob);
+    images.push({
+      id: `${Date.now()}-${i}`,
+      src: dataUrl,
+      name: `Page ${i}`,
+      format: format === 'png' ? 'PNG' : 'JPEG',
+      width,
+      height,
+    });
   }
 
-  return images;
+  return { blobs, images };
 }
 
 async function renderPdfPageToImage(
-  pdfData: ArrayBuffer,
+  pdfData: Uint8Array,
   pageIndex: number,
   format: 'jpg' | 'png',
   pdfjsLib: any
-): Promise<Blob> {
+): Promise<{ blob: Blob; width: number; height: number }> {
   const loadingTask = pdfjsLib.getDocument({ data: pdfData });
   const pdf = await loadingTask.promise;
   const page = await pdf.getPage(pageIndex + 1);
@@ -69,11 +88,20 @@ async function renderPdfPageToImage(
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob) {
-        resolve(blob);
+        resolve({ blob, width: viewport.width, height: viewport.height });
       } else {
         reject(new Error('Failed to convert canvas to blob'));
       }
     }, `image/${format}`, 0.95);
+  });
+}
+
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
   });
 }
 

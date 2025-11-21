@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Backgrounds */
+    --bg-color: #0d0d0d;              /* Deepest background (body) */
+    --neumorphic-bg: #1a1a1a;         /* Element background (cards, sidebar) */
+
+    /* Shadows (The "Neumorphic" Magic) */
+    --neumorphic-shadow-dark: #0a0a0a; /* Darker shadow for depth */
+    --neumorphic-shadow-light: #2a2a2a;/* Lighter highlight for extrusion */
+    
+    /* Inset Shadows (For pressed states/inputs) */
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.5);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.1);
+
+    /* Glassmorphism Accents */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    /* Brand Colors */
+    --primary-color: #4285f4;         /* Main Action Blue */
+    --secondary-color: #1a73e8;       /* Hover State Blue */
+    --accent-color: #ff6b6b;          /* Errors / Delete Actions */
+    --success-color: #34a853;         /* Success States */
+    --warning-color: #fbbc04;         /* Favorites / Warnings */
+
+    /* Typography */
+    --text-color: #e0e0e0;            /* Primary Text */
+    --text-secondary: #a0a0a0;        /* Subtitles / Meta text */
+
+    /* Global Layout */
+    --border-radius: 18px;            /* Smooth, rounded corners */
+    --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth morphing */
+}
+
+/* Light Mode Overrides */
+[data-theme="light"] {
+    --bg-color: #f0f0f0;
+    --neumorphic-bg: #e6e6e6;
+    
+    /* Shadows need to be much lighter in light mode */
+    --neumorphic-shadow-dark: #c7c7c7;
+    --neumorphic-shadow-light: #ffffff;
+
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.15);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.7);
+
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+
+    /* Text adjustment for contrast */
+    --text-color: #333333;
+    --text-secondary: #666666;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html,
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(66, 133, 244, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(66, 133, 244, 0.15) 0%, transparent 50%);
+    transition: background-color 0.3s ease;
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Neumorphic Card */
+.card {
+    background-color: var(--neumorphic-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 8px 8px 16px var(--neumorphic-shadow-dark), 
+                -8px -8px 16px var(--neumorphic-shadow-light);
+    transition: var(--transition);
+}
+
+/* Neumorphic Button */
+.btn {
+    border-radius: 16px;
+    background-color: var(--neumorphic-bg);
+    color: var(--text-color);
+    border: none;
+    cursor: pointer;
+    box-shadow: 6px 6px 12px var(--neumorphic-shadow-dark), 
+                -6px -6px 12px var(--neumorphic-shadow-light);
+    transition: var(--transition);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 8px 8px 16px var(--neumorphic-shadow-dark), 
+                -8px -8px 16px var(--neumorphic-shadow-light);
+}
+
+.btn:active {
+    transform: translateY(-1px);
+    box-shadow: inset 4px 4px 8px var(--neumorphic-shadow-dark), 
+                inset -4px -4px 8px var(--neumorphic-shadow-light);
+}
+
+/* Neumorphic Input */
+input[type="file"],
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 16px;
+    background-color: var(--neumorphic-bg);
+    border: none;
+    color: var(--text-color);
+    box-shadow: inset 6px 6px 12px var(--neumorphic-shadow-dark), 
+                inset -6px -6px 12px var(--neumorphic-shadow-light);
+    transition: var(--transition);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: inset 8px 8px 16px var(--neumorphic-shadow-dark), 
+                inset -8px -8px 16px var(--neumorphic-shadow-light);
+}
+
+/* Glassmorphism Modal */
+.modal-content {
+    background-color: rgba(26, 26, 26, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .modal-content {
+    background-color: rgba(230, 230, 230, 0.95);
+}
+
+

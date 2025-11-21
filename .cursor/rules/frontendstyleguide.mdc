@@ -1,0 +1,367 @@
+---
+alwaysApply: true
+---
+
+# Style Guide: Neumorphic Dark/Light Theme System
+
+This guide documents a universal CSS variable-based theming system using **Neumorphic** design language (Soft UI) with full support for both Dark (default) and Light modes. This system works with **any frontend framework** (React, Vue, Angular, Svelte, vanilla HTML, etc.). Future AI agents or developers should follow these patterns to replicate this exact look and feel across different projects and tech stacks.
+
+---
+
+## 1. Core Philosophy
+The design relies on **CSS Custom Properties (Variables)** for all colors, shadows, and backgrounds. This allows instant theme switching by toggling a data attribute (`data-theme="light"`) on the root `<html>` or `:root` element.
+
+- **Framework Agnostic:** Works with React, Vue, Angular, Svelte, Next.js, Nuxt, SvelteKit, vanilla HTML, or any web framework.
+- **Default Mode:** Dark (Rich blacks and dark grays).
+- **Light Mode:** Activated via `[data-theme="light"]` (Soft whites and light grays).
+- **Neumorphism:** Elements appear to be extruded from the background using dual shadows (one light, one dark).
+- **Component Flexibility:** Use these patterns with CSS Modules, Styled Components, Tailwind CSS, SCSS, or plain CSS.
+
+---
+
+## 2. CSS Variables Reference
+
+Copy this entire `:root` block to establish the base theme.
+
+### Dark Mode (Default)
+```css
+:root {
+    /* Backgrounds */
+    --bg-color: #0d0d0d;              /* Deepest background (body) */
+    --neumorphic-bg: #1a1a1a;         /* Element background (cards, sidebar) */
+
+    /* Shadows (The "Neumorphic" Magic) */
+    --neumorphic-shadow-dark: #0a0a0a; /* Darker shadow for depth */
+    --neumorphic-shadow-light: #2a2a2a;/* Lighter highlight for extrusion */
+    
+    /* Inset Shadows (For pressed states/inputs) */
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.5);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.1);
+
+    /* Glassmorphism Accents */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    /* Brand Colors */
+    --primary-color: #4285f4;         /* Main Action Blue */
+    --secondary-color: #1a73e8;       /* Hover State Blue */
+    --accent-color: #ff6b6b;          /* Errors / Delete Actions */
+    --success-color: #34a853;         /* Success States */
+    --warning-color: #fbbc04;         /* Favorites / Warnings */
+
+    /* Typography */
+    --text-color: #e0e0e0;            /* Primary Text */
+    --text-secondary: #a0a0a0;        /* Subtitles / Meta text */
+
+    /* Global Layout */
+    --border-radius: 18px;            /* Smooth, rounded corners */
+    --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth morphing */
+}
+```
+
+### Light Mode Overrides
+This block overwrites the variables when the light theme is active.
+
+```css
+[data-theme="light"] {
+    --bg-color: #f0f0f0;
+    --neumorphic-bg: #e6e6e6;
+    
+    /* Shadows need to be much lighter in light mode */
+    --neumorphic-shadow-dark: #c7c7c7;
+    --neumorphic-shadow-light: #ffffff;
+
+    --neumorphic-inset-dark: rgba(0, 0, 0, 0.15);
+    --neumorphic-inset-light: rgba(255, 255, 255, 0.7);
+
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+
+    /* Text adjustment for contrast */
+    --text-color: #333333;
+    --text-secondary: #666666;
+}
+```
+
+---
+
+## 3. Component Implementation Patterns
+
+### A. The Neumorphic Card (Standard Container)
+Use this for any card, sidebar, or main container. It creates the "floating" effect.
+
+```css
+.card {
+    background-color: var(--neumorphic-bg);
+    border-radius: var(--border-radius);
+    
+    /* The Dual Shadow: Dark shadow bottom-right, Light shadow top-left */
+    box-shadow: 8px 8px 16px var(--neumorphic-shadow-dark), 
+                -8px -8px 16px var(--neumorphic-shadow-light);
+                
+    transition: var(--transition);
+}
+```
+
+### B. Buttons (Interactive Elements)
+Buttons lift up on hover and press down (inset) on click.
+
+```css
+.btn {
+    border-radius: 16px;
+    background-color: var(--neumorphic-bg);
+    color: var(--text-color);
+    border: none;
+    
+    /* Resting State */
+    box-shadow: 6px 6px 12px var(--neumorphic-shadow-dark), 
+                -6px -6px 12px var(--neumorphic-shadow-light);
+    transition: var(--transition);
+}
+
+/* Hover State: Lift higher */
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 8px 8px 16px var(--neumorphic-shadow-dark), 
+                -8px -8px 16px var(--neumorphic-shadow-light);
+}
+
+/* Active/Pressed State: Inset shadows to look "pushed in" */
+.btn:active {
+    transform: translateY(-1px);
+    box-shadow: inset 4px 4px 8px var(--neumorphic-shadow-dark), 
+                inset -4px -4px 8px var(--neumorphic-shadow-light);
+}
+```
+
+### C. Inputs (Search Bars & Form Fields)
+Inputs should always look "pressed in" (inset) by default to denote they are containers for text.
+
+```css
+input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 16px;
+    background-color: var(--neumorphic-bg);
+    border: none;
+    color: var(--text-color);
+    
+    /* Permanent Inset Shadow */
+    box-shadow: inset 6px 6px 12px var(--neumorphic-shadow-dark), 
+                inset -6px -6px 12px var(--neumorphic-shadow-light);
+}
+
+input:focus {
+    outline: none;
+    /* Deeper inset on focus */
+    box-shadow: inset 8px 8px 16px var(--neumorphic-shadow-dark), 
+                inset -8px -8px 16px var(--neumorphic-shadow-light);
+}
+```
+
+---
+
+## 4. JavaScript/TypeScript for Theme Switching
+
+Use this logic to toggle the theme and persist it in `localStorage`. Works with any framework.
+
+### Vanilla JavaScript / TypeScript
+```javascript
+// 1. Check saved preference on load
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+
+// 2. Toggle Function
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    // Apply to root element
+    document.documentElement.setAttribute('data-theme', newTheme);
+    
+    // Save preference
+    localStorage.setItem('theme', newTheme);
+    
+    // Update Icon (Optional)
+    updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+        icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+}
+```
+
+### React / Next.js Example
+```typescript
+import { useEffect, useState } from 'react';
+
+export function useTheme() {
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }, []);
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    };
+
+    return { theme, toggleTheme };
+}
+```
+
+### Vue 3 / Nuxt Example
+```typescript
+import { ref, onMounted } from 'vue';
+
+export function useTheme() {
+    const theme = ref<'dark' | 'light'>('dark');
+
+    onMounted(() => {
+        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
+        theme.value = savedTheme;
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    });
+
+    const toggleTheme = () => {
+        const newTheme = theme.value === 'dark' ? 'light' : 'dark';
+        theme.value = newTheme;
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    };
+
+    return { theme, toggleTheme };
+}
+```
+
+### Svelte / SvelteKit Example
+```typescript
+import { writable } from 'svelte/store';
+import { browser } from '$app/environment'; // SvelteKit only
+
+function createThemeStore() {
+    const { subscribe, set } = writable<'dark' | 'light'>('dark');
+
+    if (browser) {
+        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
+        set(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    return {
+        subscribe,
+        toggle: () => {
+            if (browser) {
+                const current = document.documentElement.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                set(newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+        }
+    };
+}
+
+export const theme = createThemeStore();
+```
+
+---
+
+## 5. Special Effects
+
+### Glassmorphism Overlay (Modals)
+For modals or floating overlays, combine Neumorphism with Glassmorphism (blur).
+
+```css
+.modal-content {
+    /* Semi-transparent background */
+    background-color: rgba(26, 26, 26, 0.85); 
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Light mode override for glass */
+[data-theme="light"] .modal-content {
+    background-color: rgba(230, 230, 230, 0.95);
+}
+```
+
+### Animated Gradient Background
+The body uses a subtle radial gradient that shifts slightly.
+
+```css
+body {
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(66, 133, 244, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(66, 133, 244, 0.15) 0%, transparent 50%);
+    transition: background-color 0.3s ease;
+}
+```
+
+---
+
+## 6. Framework-Specific Implementation Tips
+
+### React / Next.js
+- Use CSS Modules or Styled Components with CSS variables
+- Create a `ThemeProvider` context for global theme state
+- Use `useEffect` to sync with localStorage on mount
+- For Next.js, add theme script in `_document.tsx` to prevent flash
+
+### Vue / Nuxt
+- Use scoped styles with CSS variables
+- Create a composable `useTheme()` for theme logic
+- For Nuxt, use a plugin to initialize theme on SSR
+- Store theme in Pinia/Vuex if needed for complex apps
+
+### Svelte / SvelteKit
+- Use Svelte stores for reactive theme state
+- CSS variables work natively in `<style>` blocks
+- For SvelteKit, use `browser` check to prevent SSR issues
+- Add theme initialization in root `+layout.svelte`
+
+### Tailwind CSS Integration
+```javascript
+// tailwind.config.js
+module.exports = {
+  darkMode: 'class', // Use class-based dark mode
+  theme: {
+    extend: {
+      colors: {
+        'neumorphic-bg': 'var(--neumorphic-bg)',
+        'primary': 'var(--primary-color)',
+        // ... map other variables
+      },
+      boxShadow: {
+        'neumorphic': '8px 8px 16px var(--neumorphic-shadow-dark), -8px -8px 16px var(--neumorphic-shadow-light)',
+        'neumorphic-inset': 'inset 6px 6px 12px var(--neumorphic-shadow-dark), inset -6px -6px 12px var(--neumorphic-shadow-light)',
+      }
+    }
+  }
+}
+```
+
+---
+
+## 7. Best Practices for AI Implementation
+
+1.  **Never hardcode colors.** Always use `var(--variable-name)` regardless of framework.
+2.  **Always mirror shadows.** If you add a dark shadow, you must add a corresponding light shadow for the 3D effect.
+3.  **Text Contrast:** Ensure `var(--text-secondary)` is readable on both `var(--bg-color)` (Dark) and `var(--bg-color)` (Light).
+4.  **Transitions:** Apply `transition: var(--transition)` to all interactive elements to make the theme switch feel "liquid" rather than instant.
+5.  **Theme Toggle:** Always include a theme toggle button that calls `toggleTheme()` and persists the choice in localStorage.
+6.  **Component Consistency:** All cards, buttons, inputs, and containers should follow the neumorphic shadow pattern for visual consistency.
+7.  **Responsive Design:** Maintain the neumorphic style across all breakpoints, adjusting shadow sizes proportionally for smaller screens.
+8.  **SSR Compatibility:** For server-rendered frameworks (Next.js, Nuxt, SvelteKit), prevent hydration mismatches by checking `typeof window !== 'undefined'` or using framework-specific browser checks.
+9.  **CSS-in-JS:** If using styled-components, emotion, or similar, inject CSS variables into a global style or use `createGlobalStyle`.
+10. **Performance:** CSS variables are performant and don't require re-rendering components when theme changes—only CSS recalculates.
